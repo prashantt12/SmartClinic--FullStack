@@ -120,9 +120,144 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  role: 'role',
+  departmentId: 'departmentId'
+};
+
+exports.Prisma.DepartmentScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
+exports.Prisma.AppointmentScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  status: 'status',
+  notes: 'notes',
+  scheduledAt: 'scheduledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  scheduleId: 'scheduleId'
+};
+
+exports.Prisma.ScheduleScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  date: 'date',
+  startTime: 'startTime',
+  endTime: 'endTime'
+};
+
+exports.Prisma.AdmissionScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  admittedAt: 'admittedAt',
+  dischargedAt: 'dischargedAt',
+  reason: 'reason'
+};
+
+exports.Prisma.RoomScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  roomType: 'roomType',
+  capacity: 'capacity',
+  isOccupied: 'isOccupied'
+};
+
+exports.Prisma.RoomAssignmentScalarFieldEnum = {
+  id: 'id',
+  admissionId: 'admissionId',
+  roomId: 'roomId',
+  assignedAt: 'assignedAt',
+  dischargedAt: 'dischargedAt'
+};
+
+exports.Prisma.BillingScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  admissionId: 'admissionId',
+  amount: 'amount',
+  discount: 'discount',
+  finalAmount: 'finalAmount',
+  paid: 'paid',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  recordId: 'recordId',
+  timestamp: 'timestamp',
+  tableName: 'tableName',
+  before: 'before',
+  after: 'after'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+exports.Role = exports.$Enums.Role = {
+  PATIENT: 'PATIENT',
+  DOCTOR: 'DOCTOR',
+  ADMIN: 'ADMIN'
+};
+
+exports.AppointmentStatus = exports.$Enums.AppointmentStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
 
 exports.Prisma.ModelName = {
-
+  User: 'User',
+  Department: 'Department',
+  Appointment: 'Appointment',
+  Schedule: 'Schedule',
+  Admission: 'Admission',
+  Room: 'Room',
+  RoomAssignment: 'RoomAssignment',
+  Billing: 'Billing',
+  AuditLog: 'AuditLog',
+  Session: 'Session'
 };
 
 /**

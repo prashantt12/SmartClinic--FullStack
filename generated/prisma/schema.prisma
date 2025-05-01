@@ -13,3 +13,150 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      Role
+
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+
+  patientAppointments Appointment[] @relation("PatientAppointments")
+  doctorAppointments  Appointment[] @relation("DoctorAppointments")
+  doctorSchedules     Schedule[]    @relation("DoctorSchedules")
+  auditLogs           AuditLog[]
+  sessions            Session[]
+
+  Admission Admission[]
+}
+
+model Department {
+  id    String @id @default(cuid())
+  name  String @unique
+  users User[]
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+model Appointment {
+  id        String @id @default(cuid())
+  patientId String
+  patient   User   @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctorId  String
+  doctor    User   @relation("DoctorAppointments", fields: [doctorId], references: [id])
+
+  status      AppointmentStatus @default(PENDING)
+  notes       String?
+  scheduledAt DateTime
+  billing     Billing?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Schedule   Schedule? @relation(fields: [scheduleId], references: [id])
+  scheduleId String?
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([scheduleId])
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Schedule {
+  id           String        @id @default(cuid())
+  doctorId     String?
+  doctor       User?         @relation("DoctorSchedules", fields: [doctorId], references: [id], onDelete: SetNull)
+  date         DateTime
+  startTime    DateTime
+  endTime      DateTime
+  appointments Appointment[] //a doctor can have multiple appointments on a given day
+}
+
+model Admission {
+  id              String           @id @default(cuid())
+  patientId       String
+  patient         User             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  admittedAt      DateTime
+  dischargedAt    DateTime?
+  reason          String
+  billing         Billing?
+  roomAssignments RoomAssignment[]
+
+  @@index([patientId])
+}
+
+model Room {
+  id              String           @id @default(cuid())
+  number          String           @unique
+  roomType        String
+  capacity        Int
+  isOccupied      Boolean          @default(false)
+  roomAssignments RoomAssignment[]
+}
+
+model RoomAssignment {
+  id           String    @id @default(cuid())
+  admissionId  String
+  roomId       String
+  admission    Admission @relation(fields: [admissionId], references: [id])
+  room         Room      @relation(fields: [roomId], references: [id])
+  assignedAt   DateTime
+  dischargedAt DateTime?
+
+  @@index([admissionId])
+  @@index([roomId])
+}
+
+model Billing {
+  id            String  @id @default(cuid())
+  appointmentId String? @unique
+  admissionId   String? @unique
+  amount        Float
+  discount      Float?  @default(0)
+  finalAmount   Float
+  paid          Boolean @default(false)
+
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+  admission   Admission?   @relation(fields: [admissionId], references: [id])
+  createdAt   DateTime     @default(now())
+
+  @@index([appointmentId])
+  @@index([admissionId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  recordId  String
+  timestamp DateTime @default(now())
+  tableName String
+  before    Json?
+  after     Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

@@ -20,6 +20,9 @@ lerna-debug.log*
 /.nyc_output
 
 package-lock.json
+generated/
+generated/prisma
+docker-compose.yml
 
 # IDEs and editors
 /.idea
