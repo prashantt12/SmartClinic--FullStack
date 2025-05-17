@@ -1,10 +1,13 @@
+import { Role } from "generated/prisma";
+import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
-export const RegisterDto = z.object({
+export const RegisterSchema = z.object({
     email: z.string().email({
         message: "Invalid email address",
-    }),
-    password: z.string().min(8, {
+    }).toLowerCase().trim(),
+
+    password: z.string().trim().min(8, {
         message: "Password must be at least 8 characters long",
     }).max(20, {
         message: "Password must be at most 20 characters long",
@@ -13,7 +16,8 @@ export const RegisterDto = z.object({
             message: "Password must contain at least one number and one special character",
         }
     ),
-    confirmPassword: z.string().min(8, {
+
+    confirmPassword: z.string().trim().min(8, {
         message: "Password must be at least 8 characters long",
     }).max(20, {
         message: "Password must be at most 20 characters long",
@@ -22,13 +26,25 @@ export const RegisterDto = z.object({
             message: "Password must contain at least one number and one special character",
         }
     ),
-    firstname: z.string().min(1).max(30),
-    lastname: z.string().min(1).max(30).optional(),
-}).superRefine((data, ctx) => {
-    data.password !== data.confirmPassword && ctx.addIssue({
-        code: "custom",
-        message: "Passwords do not match",
+
+    firstname: z.string().min(1).max(30).transform((val) => val.trim().toLowerCase()),
+    lastname: z.string().min(1).max(30).transform((val) => val.trim().toLowerCase()).optional(),
+    role: z.string().optional().transform((val) => {
+        if(!val) return Role.PATIENT;
+        const upper = String(val).toUpperCase();
+        if (!Object.values(Role).includes(upper as Role)) {
+            throw new Error("Invalid role");
+        }
+        return upper as Role;
     })
+}).superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+        ctx.addIssue({
+            code: "custom",
+            path: ["confirmPassword"],
+            message: "Passwords do not match",
+        })
+    }
 });
 
-export type RegisterDto = z.infer<typeof RegisterDto>;
+export class RegisterDto extends createZodDto(RegisterSchema) {};

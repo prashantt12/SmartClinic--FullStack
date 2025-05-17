@@ -10,4 +10,8 @@ export class AuthDataService{
         const user = await this.authService.createUser(data);
         return user;
     }
+
+    async checkAdminExists(body:RegisterDto){
+        const admin = await this.authService.checkAdmin(body)
+    }
 }
